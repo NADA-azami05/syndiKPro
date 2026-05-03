@@ -23,13 +23,3 @@ public function reponses() {
     return $this->hasMany(VoteReponse::class);
 }
 }
-<?php
-
-namespace App\Models;
-
-use Illuminate\Database\Eloquent\Model;
-
-class Vote extends Model
-{
-    //
-}

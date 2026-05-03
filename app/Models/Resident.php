@@ -6,7 +6,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class Resident extends Model
 {
-<<<<<<< HEAD
     protected $fillable = [
     'user_id', 'lot_id',
     'type', 'statut', 'telephone'
@@ -27,7 +26,4 @@ public function reclamations() {
 public function voteReponses() {
     return $this->hasMany(VoteReponse::class);
 }
-=======
-    //
->>>>>>> 5fca6984b59f74e69135a2a24e9501f2852530c6
 }
