@@ -19,10 +19,25 @@ class User extends Authenticatable
      * @var list<string>
      */
     protected $fillable = [
-        'name',
-        'email',
-        'password',
-    ];
+    'name',
+    'email',
+    'password',
+    'role',
+    'stripe_customer_id',
+];
+
+public function resident() {
+    return $this->hasOne(Resident::class);
+}
+public function annonces() {
+    return $this->hasMany(Annonce::class);
+}
+public function isSyndic() {
+    return $this->role === 'syndic';
+}
+public function isResident() {
+    return $this->role === 'resident';
+}
 
     /**
      * The attributes that should be hidden for serialization.
