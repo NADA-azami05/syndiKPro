@@ -5,258 +5,119 @@
 <style>
 .auth-page {
     min-height: calc(100vh - 68px);
-    display: grid; grid-template-columns: 1fr 1fr;
+    position: relative;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
 }
-.auth-visual {
-    position: relative; overflow: hidden;
-     background: transparent;
-    display: flex; align-items: center; justify-content: center; padding: 60px;
+.auth-bg {
+    position: absolute; inset: 0; z-index: 0;
+    background: url('/images/hero_home.jpg') center/cover no-repeat;
+    filter: blur(2px);
+    transform: scale(1.05);
 }
-.auth-visual-bg {
-    position: absolute; inset: 0;
-    background: url('{{ asset('images/hero_auth.jpg') }}') center/cover no-repeat;
-      opacity: 1;
+.auth-bg-overlay {
+    position: absolute; inset: 0; z-index: 1;
+    background: rgba(240,244,255,0.55);
 }
-.auth-visual-overlay {
-    position: absolute; inset: 0;
-   background: linear-gradient(145deg, rgba(0,0,0,0.45), rgba(0,0,0,0.20));
+.auth-inner {
+    position: relative; z-index: 2;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px; align-items: center;
+    width: 100%; padding: 60px 80px;
 }
-.auth-visual-content { position: relative; z-index: 2; color: #fff; }
-.auth-visual-logo {
-    display: flex; align-items: center; gap: 10px;
-    font-size: 20px; font-weight: 500; margin-bottom: 60px;
-}
-.auth-visual-logo .icon {
-    width: 40px; height: 40px; background: var(--orange);
-    border-radius: 10px; display: grid; place-items: center; font-size: 18px;
-}
-.auth-visual-content h2 {
-    font-family: var(--font-serif); font-size: 36px; font-weight: 700;
-    line-height: 1.2; margin-bottom: 18px;
-}
-.auth-visual-content h2 em { font-style: italic; color: var(--orange); }
-.auth-visual-content p {
-    font-size: 15px; color: rgba(255,255,255,0.55);
-    line-height: 1.75; font-weight: 300; max-width: 360px; margin-bottom: 40px;
-}
+
+/* Texte gauche */
+.auth-text { color: #111111; }
+.auth-text .logo { display: flex; align-items: center; gap: 10px; font-size: 20px; font-weight: 600; margin-bottom: 40px; color: #111; }
+.auth-text .logo .icon { width: 42px; height: 42px; background: #006AD7; border-radius: 10px; display: grid; place-items: center; font-size: 18px; }
+.auth-text h2 { font-family: var(--font-serif); font-size: clamp(32px, 3.8vw, 48px); font-weight: 900; line-height: 1.1; margin-bottom: 16px; color: #111111; }
+.auth-text h2 em { font-style: italic; color: #006AD7; }
+.auth-text p { font-size: 15px; color: #444; line-height: 1.8; font-weight: 300; max-width: 380px; margin-bottom: 36px; }
 .auth-steps { display: flex; flex-direction: column; gap: 18px; }
 .auth-step { display: flex; align-items: flex-start; gap: 14px; }
-.step-num {
-    width: 28px; height: 28px; border-radius: 50%;
-    background: var(--orange); color: #fff;
-    display: grid; place-items: center;
-    font-size: 12px; font-weight: 700; flex-shrink: 0;
-}
-.step-text p:first-child { font-size: 14px; font-weight: 500; color: rgba(255,255,255,0.90); }
-.step-text p:last-child { font-size: 12px; color: rgba(255,255,255,0.45); margin-top: 2px; font-weight: 300; }
+.step-num { width: 32px; height: 32px; border-radius: 50%; background: #006AD7; color: #fff; display: grid; place-items: center; font-size: 13px; font-weight: 700; flex-shrink: 0; }
+.step-text p:first-child { font-size: 14px; font-weight: 500; color: #111; }
+.step-text p:last-child { font-size: 12px; color: #666; margin-top: 2px; }
 
-.auth-form-panel {
-    background: var(--bg); display: flex;
-    align-items: center; justify-content: center; padding: 60px;
-}
-.auth-card {
-    width: 100%; max-width: 420px;
-    background: var(--bg-white); border: 1px solid var(--border);
-    border-radius: var(--radius-lg); padding: 44px;
-    box-shadow: 0 4px 24px rgba(0,0,0,0.06);
-}
-.auth-card-header { margin-bottom: 32px; }
-.auth-card-header h1 {
-    font-family: var(--font-serif); font-size: 26px; font-weight: 700;
-    color: var(--navy); margin-bottom: 6px;
-}
-.auth-card-header p { font-size: 14px; color: var(--text-muted); font-weight: 300; }
-
-.form-group { margin-bottom: 20px; }
-.form-group label {
-    display: block; font-size: 12px; font-weight: 500; letter-spacing: 0.5px;
-    text-transform: uppercase; color: var(--text-muted); margin-bottom: 8px;
-}
-.form-control {
-    width: 100%; padding: 13px 16px;
-    background: var(--bg); border: 1px solid var(--border);
-    border-radius: 10px; font-size: 14px; color: var(--navy);
-    font-family: var(--font-sans); outline: none;
-    transition: border-color .2s, box-shadow .2s;
-}
-.form-control:focus {
-    border-color: var(--orange);
-    box-shadow: 0 0 0 3px rgba(212,136,42,0.12);
-}
-.form-control::placeholder { color: var(--text-light); font-weight: 300; }
+/* Carte droite */
+.auth-card { background: rgba(255,255,255,0.97); border-radius: 24px; padding: 48px; box-shadow: 0 24px 80px rgba(0,0,0,0.30); width: 100%; }
+.auth-card-header { margin-bottom: 24px; }
+.auth-card-header h1 { font-family: var(--font-serif); font-size: 26px; font-weight: 700; color: #111111; margin-bottom: 6px; }
+.auth-card-header p { font-size: 14px; color: #6b7280; font-weight: 300; }
+.role-badge { display: inline-flex; align-items: center; gap: 6px; background: #e6f2ff; color: #006AD7; border: 1px solid rgba(0,106,215,0.20); border-radius: 100px; padding: 6px 14px; font-size: 12px; font-weight: 500; margin-bottom: 20px; }
+.form-group { margin-bottom: 16px; }
+.form-group label { display: block; font-size: 11px; font-weight: 600; letter-spacing: 0.6px; text-transform: uppercase; color: #6b7280; margin-bottom: 7px; }
+.form-control { width: 100%; padding: 13px 16px; background: #f0f4ff; border: 1px solid #e5e7eb; border-radius: 10px; font-size: 14px; color: #111; font-family: var(--font-sans); outline: none; transition: border-color .2s, box-shadow .2s; }
+.form-control:focus { border-color: #006AD7; box-shadow: 0 0 0 3px rgba(0,106,215,0.10); background: #fff; }
+.form-control::placeholder { color: #c4c9d4; font-weight: 300; }
 .form-control.is-invalid { border-color: #ef4444; }
-.invalid-feedback { font-size: 12px; color: #ef4444; margin-top: 6px; }
-
-.password-hint {
-    font-size: 11px; color: var(--text-light); margin-top: 6px; font-weight: 300;
-}
-
-.role-badge {
-    display: inline-flex; align-items: center; gap: 6px;
-    background: var(--orange-light); color: var(--orange);
-    border: 1px solid rgba(212,136,42,0.25);
-    border-radius: 100px; padding: 6px 14px; font-size: 12px;
-    font-weight: 500; margin-bottom: 24px;
-}
-
-.btn-submit {
-    width: 100%; padding: 14px;
-    background: var(--orange); color: #fff;
-    border: none; border-radius: 10px;
-    font-size: 15px; font-weight: 500; cursor: pointer;
-    font-family: var(--font-sans);
-    transition: background .2s, transform .15s;
-}
-.btn-submit:hover { background: #b8741f; transform: translateY(-1px); }
-
-.auth-footer {
-    text-align: center; margin-top: 24px;
-    font-size: 13px; color: var(--text-muted);
-}
-.auth-footer a { color: var(--orange); text-decoration: none; font-weight: 500; }
+.invalid-feedback { font-size: 12px; color: #ef4444; margin-top: 5px; }
+.hint { font-size: 11px; color: #c4c9d4; margin-top: 5px; }
+.btn-submit { width: 100%; padding: 14px; background: #006AD7; color: #fff; border: none; border-radius: 10px; font-size: 15px; font-weight: 500; cursor: pointer; font-family: var(--font-sans); transition: background .2s, transform .15s; margin-top: 6px; }
+.btn-submit:hover { background: #0055b3; transform: translateY(-1px); }
+.terms { font-size: 11px; color: #c4c9d4; text-align: center; margin-top: 12px; line-height: 1.6; }
+.terms a { color: #006AD7; text-decoration: none; }
+.auth-footer { text-align: center; margin-top: 18px; font-size: 14px; color: #6b7280; }
+.auth-footer a { color: #006AD7; text-decoration: none; font-weight: 500; }
 .auth-footer a:hover { text-decoration: underline; }
-
-.terms {
-    font-size: 11px; color: var(--text-light); text-align: center;
-    margin-top: 16px; line-height: 1.6;
-}
-.terms a { color: var(--orange); text-decoration: none; }
 </style>
 @endpush
 
 @section('content')
 <div class="auth-page">
+    <div class="auth-bg"></div>
+    <div class="auth-bg-overlay"></div>
 
-    {{-- Panneau visuel gauche --}}
-    <div class="auth-visual">
-        <div class="auth-visual-bg"></div>
-        <div class="auth-visual-overlay"></div>
-        <div class="auth-visual-content">
-            <div class="auth-visual-logo">
-                <div class="icon">🏢</div>
-                SyndicPro
-            </div>
+    <div class="auth-inner">
+
+        {{-- Texte gauche --}}
+        <div class="auth-text">
             <h2>Commencez à gérer<br>votre résidence <em>aujourd'hui</em></h2>
             <p>Créez votre compte syndic en moins de 2 minutes et invitez vos résidents directement depuis la plateforme.</p>
             <div class="auth-steps">
-                <div class="auth-step">
-                    <div class="step-num">1</div>
-                    <div class="step-text">
-                        <p>Créez votre compte syndic</p>
-                        <p>Inscription rapide et sécurisée</p>
-                    </div>
-                </div>
-                <div class="auth-step">
-                    <div class="step-num">2</div>
-                    <div class="step-text">
-                        <p>Configurez votre résidence</p>
-                        <p>Ajoutez vos lots et informations</p>
-                    </div>
-                </div>
-                <div class="auth-step">
-                    <div class="step-num">3</div>
-                    <div class="step-text">
-                        <p>Invitez vos résidents</p>
-                        <p>Ils reçoivent leur accès par email</p>
-                    </div>
-                </div>
+                <div class="auth-step"><div class="step-num">1</div><div class="step-text"><p>Créez votre compte syndic</p><p>Inscription rapide et sécurisée</p></div></div>
+                <div class="auth-step"><div class="step-num">2</div><div class="step-text"><p>Configurez votre résidence</p><p>Ajoutez vos lots et informations</p></div></div>
+                <div class="auth-step"><div class="step-num">3</div><div class="step-text"><p>Invitez vos résidents</p><p>Ils reçoivent leur accès par email</p></div></div>
             </div>
         </div>
-    </div>
 
-    {{-- Formulaire droit --}}
-    <div class="auth-form-panel">
+        {{-- Carte droite --}}
         <div class="auth-card">
             <div class="auth-card-header">
                 <h1>Créer un compte</h1>
                 <p>Rejoignez SyndicPro dès maintenant</p>
             </div>
-
             <div class="role-badge">🏢 Compte Syndic</div>
-
             <form method="POST" action="{{ route('register') }}">
                 @csrf
-
                 <div class="form-group">
                     <label for="name">Nom complet</label>
-                    <input
-                        type="text"
-                        id="name"
-                        name="name"
-                        class="form-control @error('name') is-invalid @enderror"
-                        value="{{ old('name') }}"
-                        placeholder="Mohamed Alami"
-                        autocomplete="name"
-                        autofocus
-                        required
-                    >
-                    @error('name')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                    @enderror
+                    <input type="text" id="name" name="name" class="form-control @error('name') is-invalid @enderror" value="{{ old('name') }}" placeholder="Mohamed Alami" autocomplete="name" autofocus required>
+                    @error('name')<div class="invalid-feedback">{{ $message }}</div>@enderror
                 </div>
-
                 <div class="form-group">
                     <label for="email">Adresse email</label>
-                    <input
-                        type="email"
-                        id="email"
-                        name="email"
-                        class="form-control @error('email') is-invalid @enderror"
-                        value="{{ old('email') }}"
-                        placeholder="votre@email.com"
-                        autocomplete="email"
-                        required
-                    >
-                    @error('email')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                    @enderror
+                    <input type="email" id="email" name="email" class="form-control @error('email') is-invalid @enderror" value="{{ old('email') }}" placeholder="votre@email.com" autocomplete="email" required>
+                    @error('email')<div class="invalid-feedback">{{ $message }}</div>@enderror
                 </div>
-
                 <div class="form-group">
                     <label for="password">Mot de passe</label>
-                    <input
-                        type="password"
-                        id="password"
-                        name="password"
-                        class="form-control @error('password') is-invalid @enderror"
-                        placeholder="••••••••"
-                        autocomplete="new-password"
-                        required
-                    >
-                    <p class="password-hint">Minimum 8 caractères</p>
-                    @error('password')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                    @enderror
+                    <input type="password" id="password" name="password" class="form-control @error('password') is-invalid @enderror" placeholder="••••••••" autocomplete="new-password" required>
+                    <p class="hint">Minimum 8 caractères</p>
+                    @error('password')<div class="invalid-feedback">{{ $message }}</div>@enderror
                 </div>
-
                 <div class="form-group">
                     <label for="password_confirmation">Confirmer le mot de passe</label>
-                    <input
-                        type="password"
-                        id="password_confirmation"
-                        name="password_confirmation"
-                        class="form-control"
-                        placeholder="••••••••"
-                        autocomplete="new-password"
-                        required
-                    >
+                    <input type="password" id="password_confirmation" name="password_confirmation" class="form-control" placeholder="••••••••" autocomplete="new-password" required>
                 </div>
-
                 <button type="submit" class="btn-submit">Créer mon compte</button>
-
-                <p class="terms">
-                    En créant un compte, vous acceptez nos
-                    <a href="#">Conditions d'utilisation</a> et notre
-                    <a href="#">Politique de confidentialité</a>.
-                </p>
+                <p class="terms">En créant un compte, vous acceptez nos <a href="#">Conditions</a> et notre <a href="#">Politique de confidentialité</a>.</p>
             </form>
-
-            <p class="auth-footer">
-                Déjà un compte ?
-                <a href="{{ route('login') }}">Se connecter</a>
-            </p>
+            <p class="auth-footer">Déjà un compte ? <a href="{{ route('login') }}">Se connecter</a></p>
         </div>
-    </div>
 
+    </div>
 </div>
 @endsection
