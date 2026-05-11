@@ -5,13 +5,23 @@ namespace App\Http\Controllers;
 use App\Models\Vote;
 use App\Models\VoteReponse;
 use App\Models\Copropriete;
+<<<<<<< HEAD
 use App\Models\User;
 use App\Services\NotificationService; // ← AJOUTÉ
+=======
+>>>>>>> 23e859eb1341ed83e8908e12cbdbb8afac276d95
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class VoteController extends Controller
 {
+<<<<<<< HEAD
+=======
+    /**
+     * Liste tous les votes
+     * Syndic : tous | Résident : ouverts seulement
+     */
+>>>>>>> 23e859eb1341ed83e8908e12cbdbb8afac276d95
     public function index()
     {
         $user = Auth::user();
@@ -33,6 +43,12 @@ class VoteController extends Controller
         return view('votes.index', compact('votes'));
     }
 
+<<<<<<< HEAD
+=======
+    /**
+     * Formulaire de création (syndic seulement)
+     */
+>>>>>>> 23e859eb1341ed83e8908e12cbdbb8afac276d95
     public function create()
     {
         abort_if(Auth::user()->role !== 'syndic', 403);
@@ -40,12 +56,19 @@ class VoteController extends Controller
         return view('votes.create', compact('coproprietes'));
     }
 
+<<<<<<< HEAD
+=======
+    /**
+     * Enregistre un nouveau vote
+     */
+>>>>>>> 23e859eb1341ed83e8908e12cbdbb8afac276d95
     public function store(Request $request)
     {
         abort_if(Auth::user()->role !== 'syndic', 403);
 
         $validated = $request->validate([
             'copropriete_id' => 'required|exists:coproprietes,id',
+<<<<<<< HEAD
             'titre' => 'required|string|max:255',
             'description' => 'nullable|string',
             'options' => 'required|array|min:2',
@@ -72,11 +95,36 @@ class VoteController extends Controller
             'vote',
             route('resident.votes.show', $vote)
         );
+=======
+            'titre'          => 'required|string|max:255',
+            'description'    => 'nullable|string',
+            'options'        => 'required|array|min:2',
+            'options.*'      => 'required|string|max:255',
+            'date_fin'       => 'required|date|after:now',
+        ], [
+            'copropriete_id.required' => 'Veuillez sélectionner une copropriété.',
+            'titre.required'          => 'Le titre est obligatoire.',
+            'options.min'             => 'Il faut au moins 2 options.',
+            'options.*.required'      => 'Chaque option doit avoir un libellé.',
+            'date_fin.after'          => 'La date de fin doit être dans le futur.',
+        ]);
+
+        // Filtrer les options vides
+        $validated['options'] = array_values(array_filter($validated['options']));
+
+        Vote::create($validated);
+>>>>>>> 23e859eb1341ed83e8908e12cbdbb8afac276d95
 
         return redirect()->route('syndic.votes.index')
             ->with('success', 'Vote créé avec succès.');
     }
 
+<<<<<<< HEAD
+=======
+    /**
+     * Affiche les détails + résultats en % d'un vote
+     */
+>>>>>>> 23e859eb1341ed83e8908e12cbdbb8afac276d95
     public function show(Vote $vote)
     {
         $user = Auth::user();
@@ -88,7 +136,11 @@ class VoteController extends Controller
         foreach ($vote->options as $option) {
             $count = $vote->reponses->where('choix', $option)->count();
             $resultats[$option] = [
+<<<<<<< HEAD
                 'count' => $count,
+=======
+                'count'       => $count,
+>>>>>>> 23e859eb1341ed83e8908e12cbdbb8afac276d95
                 'pourcentage' => $totalReponses > 0
                     ? round(($count / $totalReponses) * 100, 1)
                     : 0,
@@ -105,6 +157,12 @@ class VoteController extends Controller
         return view('votes.show', compact('vote', 'resultats', 'totalReponses', 'aDejaVote'));
     }
 
+<<<<<<< HEAD
+=======
+    /**
+     * Enregistre le vote d'un résident
+     */
+>>>>>>> 23e859eb1341ed83e8908e12cbdbb8afac276d95
     public function voter(Request $request, Vote $vote)
     {
         abort_if(Auth::user()->role !== 'resident', 403);
@@ -131,6 +189,7 @@ class VoteController extends Controller
             'choix' => 'required|string|in:' . implode(',', $vote->options),
         ], [
             'choix.required' => 'Veuillez sélectionner une option.',
+<<<<<<< HEAD
             'choix.in' => 'Option invalide.',
         ]);
 
@@ -165,6 +224,25 @@ class VoteController extends Controller
             ->with('success', 'Votre vote a été enregistré avec succès.');
     }
 
+=======
+            'choix.in'       => 'Option invalide.',
+        ]);
+
+        VoteReponse::create([
+            'vote_id'     => $vote->id,
+            'resident_id' => $resident->id,
+            'choix'       => $request->choix,
+        ]);
+
+       
+return redirect()->route('resident.votes.show', $vote)  
+    ->with('success', 'Votre vote a été enregistré avec succès.');
+    }
+
+    /**
+     * Clôturer un vote (syndic seulement)
+     */
+>>>>>>> 23e859eb1341ed83e8908e12cbdbb8afac276d95
     public function cloturer(Vote $vote)
     {
         abort_if(Auth::user()->role !== 'syndic', 403);
@@ -175,6 +253,7 @@ class VoteController extends Controller
 
         $vote->update(['statut' => 'ferme']);
 
+<<<<<<< HEAD
         // ── NOTIFICATION → Résidents quand vote clôturé ───────────
         NotificationService::envoyerACopropriete(
             $vote->copropriete_id,
@@ -184,6 +263,8 @@ class VoteController extends Controller
             route('resident.votes.show', $vote)
         );
 
+=======
+>>>>>>> 23e859eb1341ed83e8908e12cbdbb8afac276d95
         return redirect()->route('syndic.votes.index')
             ->with('success', "Le vote « {$vote->titre} » a été clôturé.");
     }
