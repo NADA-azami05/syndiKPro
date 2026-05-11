@@ -66,7 +66,10 @@
     <a href="{{ route('resident.dashboard') }}" class="sb-item active">🏠 Mon espace</a>
     <a href="#" class="sb-item">📄 Mes factures</a>
     <a href="#" class="sb-item">📢 Mes réclamations</a>
-    <a href="#" class="sb-item">🗳️ Votes</a>
+   <a href="{{ route('resident.votes.index') }}"
+   class="sb-item {{ request()->routeIs('resident.votes*') ? 'active' : '' }}">
+   🗳️ Votes
+</a>
     <a href="#" class="sb-item">📣 Annonces</a>
     <a href="#" class="sb-item">📅 Réunions</a>
   </nav>

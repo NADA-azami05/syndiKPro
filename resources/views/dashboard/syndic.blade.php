@@ -58,6 +58,7 @@
 .badge-soon{font-size:9px;background:#f0f4ff;color:#006AD7;padding:1px 6px;border-radius:20px;margin-left:auto;font-weight:600}
 </style>
 @endpush
+
 @section('content')
 <div class="dw">
 
@@ -65,30 +66,39 @@
 <aside class="sb">
   <nav class="sb-nav">
 
-    {{-- ✅ ACTIF : Dashboard --}}
     <a href="{{ route('syndic.dashboard') }}"
        class="sb-item {{ request()->routeIs('syndic.dashboard') ? 'active' : '' }}">
        📊 Tableau de bord
     </a>
 
-    {{-- ✅ ACTIF : Copropriétés --}}
     <a href="{{ route('syndic.coproprietes.index') }}"
        class="sb-item {{ request()->routeIs('syndic.coproprietes*') ? 'active' : '' }}">
        🏙️ Copropriétés
     </a>
 
-    {{-- 🔒 PAS ENCORE CRÉÉS — décommenter au fur et à mesure --}}
-    <span class="sb-item disabled">👥 Résidents     <span class="badge-soon">bientôt</span></span>
+    <span class="sb-item disabled">👥 Résidents <span class="badge-soon">bientôt</span></span>
+
     <a href="{{ route('syndic.lots.index') }}"
-   class="sb-item {{ request()->routeIs('syndic.lots*') ? 'active' : '' }}">
-   🏠 Lots
+       class="sb-item {{ request()->routeIs('syndic.lots*') ? 'active' : '' }}">
+       🏠 Lots
+    </a>
+
+    <span class="sb-item disabled">📄 Factures <span class="badge-soon">bientôt</span></span>
+
+    <span class="sb-item disabled">📢 Réclamations <span class="badge-soon">bientôt</span></span>
+
+    {{-- ✅ FOURNISSEURS — activé --}}
+    <a href="{{ route('syndic.fournisseurs.index') }}"
+       class="sb-item {{ request()->routeIs('syndic.fournisseurs*') || request()->routeIs('syndic.interventions*') ? 'active' : '' }}">
+       🔧 Fournisseurs
+    </a>
+
+    <a href="{{ route('syndic.votes.index') }}"
+   class="sb-item {{ request()->routeIs('syndic.votes*') ? 'active' : '' }}">
+   🗳️ Votes
 </a>
-    <span class="sb-item disabled">📄 Factures      <span class="badge-soon">bientôt</span></span>
-    <span class="sb-item disabled">📢 Réclamations  <span class="badge-soon">bientôt</span></span>
-    <span class="sb-item disabled">🔧 Fournisseurs  <span class="badge-soon">bientôt</span></span>
-    <span class="sb-item disabled">🗳️ Votes         <span class="badge-soon">bientôt</span></span>
-    <span class="sb-item disabled">📣 Annonces      <span class="badge-soon">bientôt</span></span>
-    <span class="sb-item disabled">📅 Réunions      <span class="badge-soon">bientôt</span></span>
+    <span class="sb-item disabled">📣 Annonces <span class="badge-soon">bientôt</span></span>
+    <span class="sb-item disabled">📅 Réunions <span class="badge-soon">bientôt</span></span>
 
   </nav>
 
@@ -206,13 +216,22 @@
     <div class="dc">
       <div class="dch">
         <span class="dct">🔧 Fournisseurs</span>
-        <span style="font-size:13px;color:#9ca3af">Voir tout →</span>
+        {{-- ✅ Lien cliquable vers la liste --}}
+        <a href="{{ route('syndic.fournisseurs.index') }}" class="dcl">Voir tout →</a>
       </div>
       @forelse(\App\Models\Fournisseur::where('actif',true)->orderByDesc('note')->take(5)->get() as $f)
       <div class="fi">
-        <div class="fav">@php $ic=['plomberie'=>'🔧','electricite'=>'⚡','nettoyage'=>'🧹','securite'=>'🔒','autre'=>'🏢']; @endphp{{ $ic[$f->categorie]??'🏢' }}</div>
-        <div style="flex:1"><div class="fn">{{ Str::limit($f->nom,18) }}</div><div class="fc">{{ ucfirst($f->categorie) }}</div></div>
-        <div class="st">@for($i=1;$i<=5;$i++){{ $i<=$f->note?'★':'☆' }}@endfor</div>
+        <div class="fav">
+          @php $ic=['plomberie'=>'🔧','electricite'=>'⚡','nettoyage'=>'🧹','securite'=>'🔒','autre'=>'🏢']; @endphp
+          {{ $ic[$f->categorie] ?? '🏢' }}
+        </div>
+        <div style="flex:1">
+          <div class="fn">{{ Str::limit($f->nom, 18) }}</div>
+          <div class="fc">{{ ucfirst($f->categorie) }}</div>
+        </div>
+        <div class="st">
+          @for($i=1;$i<=5;$i++){{ $i<=$f->note?'★':'☆' }}@endfor
+        </div>
       </div>
       @empty
       <p style="text-align:center;color:#6b7280;padding:20px;font-size:13px">Aucun fournisseur</p>

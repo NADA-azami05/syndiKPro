@@ -3,13 +3,14 @@
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\CoproprieteController;
+use App\Http\Controllers\FournisseurController;
+use App\Http\Controllers\InterventionController;
+use App\Http\Controllers\VoteController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LotController;
 
-// ── Page d'accueil ────────────────────────────────────────────────────────────
 Route::get('/', fn() => view('welcome'))->name('home');
 
-// ── Auth (invités uniquement) ─────────────────────────────────────────────────
 Route::middleware('guest')->group(function () {
     Route::get('/login',     [AuthController::class, 'showLogin'])->name('login');
     Route::post('/login',    [AuthController::class, 'login']);
@@ -17,7 +18,6 @@ Route::middleware('guest')->group(function () {
     Route::post('/register', [AuthController::class, 'register']);
 });
 
-// ── Déconnexion ───────────────────────────────────────────────────────────────
 Route::post('/logout', [AuthController::class, 'logout'])
     ->middleware('auth')
     ->name('logout');
@@ -28,21 +28,23 @@ Route::middleware(['auth', 'role:syndic'])
     ->name('syndic.')
     ->group(function () {
 
-        // Dashboard — données BDD via DashboardController
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-        // Copropriétés
         Route::resource('coproprietes', CoproprieteController::class);
+        Route::resource('lots', LotController::class);
 
-        // À ajouter aux prochaines étapes :
-        // Route::resource('residents',    ResidentController::class);
-         Route::resource('lots',         LotController::class);
-        // Route::resource('factures',     FactureController::class);
-        // Route::resource('reclamations', ReclamationController::class);
-        // Route::resource('fournisseurs', FournisseurController::class);
-        // Route::resource('votes',        VoteController::class);
-        // Route::resource('annonces',     AnnonceController::class);
-        // Route::resource('reunions',     ReunionController::class);
+        Route::resource('fournisseurs', FournisseurController::class);
+        Route::post('fournisseurs/{fournisseur}/noter', [FournisseurController::class, 'noter'])
+             ->name('fournisseurs.noter');
+
+        Route::resource('interventions', InterventionController::class)
+             ->only(['index', 'create', 'store', 'show', 'destroy']);
+
+        // ✅ Votes syndic
+        Route::resource('votes', VoteController::class)
+             ->only(['index', 'create', 'store', 'show']);
+        Route::patch('votes/{vote}/cloturer', [VoteController::class, 'cloturer'])
+             ->name('votes.cloturer');
     });
 
 // ── Espace Résident ───────────────────────────────────────────────────────────
@@ -51,13 +53,11 @@ Route::middleware(['auth', 'role:resident'])
     ->name('resident.')
     ->group(function () {
 
-        // Dashboard — données BDD via DashboardController
         Route::get('/dashboard', [DashboardController::class, 'resident'])->name('dashboard');
 
-        // À ajouter aux prochaines étapes :
-        // Route::get('factures',          [FactureController::class, 'index'])->name('factures.index');
-        // Route::get('reclamations',      [ReclamationController::class, 'index'])->name('reclamations.index');
-        // Route::get('votes',             [VoteController::class, 'index'])->name('votes.index');
-        // Route::get('annonces',          [AnnonceController::class, 'index'])->name('annonces.index');
-        // Route::get('reunions',          [ReunionController::class, 'index'])->name('reunions.index');
+        // ✅ Votes résident
+        Route::resource('votes', VoteController::class)
+             ->only(['index', 'show']);
+        Route::post('votes/{vote}/voter', [VoteController::class, 'voter'])
+             ->name('votes.voter');
     });

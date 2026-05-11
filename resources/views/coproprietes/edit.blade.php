@@ -22,12 +22,11 @@
 .page-header { display:flex; align-items:center; gap:14px; margin-bottom:28px; }
 .back-btn { display:inline-flex; align-items:center; gap:6px; color:#6b7280; text-decoration:none; font-size:14px; transition:color .2s; }
 .back-btn:hover { color:#006AD7; }
-.page-header h1 { font-family:var(--font-serif); font-size:24px; font-weight:700; color:#111; }
+.page-header h1 { font-size:24px; font-weight:700; color:#111; }
 
-/* ── INFO BANNER ── */
 .info-banner { background:#e6f2ff; border:1px solid #bfdbfe; border-radius:12px; padding:14px 18px; margin-bottom:22px; display:flex; align-items:center; gap:10px; font-size:13px; color:#1e40af; max-width:700px; }
+.alert-success-box { background:#d1fae5; border:1px solid #6ee7b7; border-radius:10px; padding:12px 18px; margin-bottom:18px; font-size:13px; color:#065f46; max-width:700px; }
 
-/* ── FORM CARD ── */
 .form-card { background:#fff; border:1px solid #e5e7eb; border-radius:16px; overflow:hidden; box-shadow:0 1px 4px rgba(0,0,0,.04); max-width:700px; }
 .form-card-header { padding:22px 28px; border-bottom:1px solid #e5e7eb; background:#fafbff; display:flex; align-items:center; justify-content:space-between; }
 .form-card-header h2 { font-size:16px; font-weight:600; color:#111; }
@@ -47,6 +46,7 @@
 
 .form-footer { display:flex; align-items:center; justify-content:space-between; padding:20px 28px; border-top:1px solid #e5e7eb; background:#fafbff; }
 .form-footer-right { display:flex; gap:12px; }
+
 .btn-primary { display:inline-flex; align-items:center; gap:8px; background:#006AD7; color:#fff; padding:12px 24px; border-radius:10px; font-size:14px; font-weight:500; border:none; cursor:pointer; font-family:inherit; transition:background .2s; }
 .btn-primary:hover { background:#0055b3; }
 .btn-ghost-nav { display:inline-flex; align-items:center; gap:6px; background:#fff; color:#6b7280; border:1px solid #e5e7eb; padding:12px 20px; border-radius:10px; font-size:14px; text-decoration:none; transition:all .2s; }
@@ -54,7 +54,6 @@
 .btn-danger { display:inline-flex; align-items:center; gap:6px; background:#fff; color:#ef4444; border:1px solid #ef4444; padding:12px 20px; border-radius:10px; font-size:14px; font-weight:500; cursor:pointer; font-family:inherit; transition:all .2s; }
 .btn-danger:hover { background:#fef2f2; }
 
-/* ── META INFO ── */
 .meta-row { display:flex; gap:20px; margin-top:20px; padding-top:20px; border-top:1px solid #f0f0f0; }
 .meta-item { font-size:12px; color:#9ca3af; }
 .meta-item strong { color:#6b7280; }
@@ -64,6 +63,7 @@
 @section('content')
 <div class="dw">
 
+    {{-- ══════════ SIDEBAR ══════════ --}}
     <aside class="sb">
         <nav class="sb-nav">
             <a href="{{ route('syndic.dashboard') }}" class="sb-item">📊 Tableau de bord</a>
@@ -80,25 +80,36 @@
         <div class="sb-bot">
             <div class="sb-user">
                 <div class="sb-av">{{ strtoupper(substr(auth()->user()->name, 0, 1)) }}</div>
-                <div><div class="sb-uname">{{ Str::limit(auth()->user()->name, 14) }}</div><div class="sb-urole">Syndic</div></div>
+                <div>
+                    <div class="sb-uname">{{ Str::limit(auth()->user()->name, 14) }}</div>
+                    <div class="sb-urole">Syndic</div>
+                </div>
             </div>
-            <form action="{{ route('logout') }}" method="POST">@csrf
+            <form action="{{ route('logout') }}" method="POST">
+                @csrf
                 <button type="submit" class="sb-out">🚪 Déconnexion</button>
             </form>
         </div>
     </aside>
 
+    {{-- ══════════ MAIN ══════════ --}}
     <main class="mc">
+
         <div class="page-header">
             <a href="{{ route('syndic.coproprietes.index') }}" class="back-btn">← Retour</a>
             <h1>✏️ Modifier copropriété</h1>
         </div>
 
+        @if(session('success'))
+            <div class="alert-success-box">✅ {{ session('success') }}</div>
+        @endif
+
         <div class="info-banner">
-            ℹ️ Vous modifiez : <strong>{{ $copropriete->nom }}</strong> — {{ $copropriete->ville }}
+            ℹ️ Vous modifiez : <strong>&nbsp;{{ $copropriete->nom }}</strong> — {{ $copropriete->ville }}
         </div>
 
         <div class="form-card">
+
             <div class="form-card-header">
                 <div>
                     <h2>Informations de la copropriété</h2>
@@ -107,8 +118,16 @@
                 <span class="edit-badge">✏️ Mode édition</span>
             </div>
 
-            <form method="POST" action="{{ route('syndic.coproprietes.update', $copropriete) }}">
-                @csrf @method('PUT')
+            {{-- ╔══════════════════════════════════════════╗
+                 ║  FORM PRINCIPAL — UPDATE (PUT)           ║
+                 ║  id="form-update"                        ║
+                 ╚══════════════════════════════════════════╝ --}}
+            <form id="form-update"
+                  method="POST"
+                  action="{{ route('syndic.coproprietes.update', $copropriete) }}">
+                @csrf
+                @method('PUT')
+
                 <div class="form-body">
                     <div class="form-grid">
 
@@ -175,19 +194,56 @@
                     </div>
                 </div>
 
+                {{-- ── Footer avec les deux boutons ── --}}
                 <div class="form-footer">
-                    <form action="{{ route('syndic.coproprietes.destroy', $copropriete) }}" method="POST"
-                        onsubmit="return confirm('Supprimer définitivement cette copropriété ?')">
-                        @csrf @method('DELETE')
-                        <button type="submit" class="btn-danger">🗑️ Supprimer</button>
-                    </form>
+
+                    {{--
+                        ✅ BOUTON SUPPRIMER
+                        form="form-delete" → soumet le formulaire DELETE séparé (en bas)
+                        NE soumet PAS ce formulaire-ci (form-update)
+                    --}}
+                    <button type="submit"
+                            form="form-delete"
+                            class="btn-danger"
+                            onclick="return confirm('Supprimer définitivement cette copropriété ? Cette action est irréversible.')">
+                        🗑️ Supprimer
+                    </button>
+
                     <div class="form-footer-right">
                         <a href="{{ route('syndic.coproprietes.index') }}" class="btn-ghost-nav">Annuler</a>
-                        <button type="submit" class="btn-primary">✓ Sauvegarder</button>
+
+                        {{--
+                            ✅ BOUTON SAUVEGARDER
+                            form="form-update" → soumet CE formulaire (PUT)
+                        --}}
+                        <button type="submit"
+                                form="form-update"
+                                class="btn-primary">
+                            ✓ Sauvegarder
+                        </button>
                     </div>
+
                 </div>
             </form>
-        </div>
+            {{-- ╔══════════════════════════════════════════╗
+                 ║  FIN FORM PRINCIPAL                      ║
+                 ╚══════════════════════════════════════════╝ --}}
+
+
+            {{-- ╔══════════════════════════════════════════╗
+                 ║  FORM DELETE — séparé, caché             ║
+                 ║  Déclenché uniquement par le bouton      ║
+                 ║  Supprimer via form="form-delete"        ║
+                 ╚══════════════════════════════════════════╝ --}}
+            <form id="form-delete"
+                  action="{{ route('syndic.coproprietes.destroy', $copropriete) }}"
+                  method="POST"
+                  style="display:none">
+                @csrf
+                @method('DELETE')
+            </form>
+
+        </div>{{-- fin .form-card --}}
 
     </main>
 </div>
