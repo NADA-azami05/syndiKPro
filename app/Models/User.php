@@ -19,25 +19,50 @@ class User extends Authenticatable
      * @var list<string>
      */
     protected $fillable = [
-    'name',
-    'email',
-    'password',
-    'role',
-    'stripe_customer_id',
-];
+        'name',
+        'email',
+        'password',
+        'role',
+        'stripe_customer_id',
+        'phone',      // ← ajouté
+        'lot_id',     // ← ajouté
+    ];
 
-public function resident() {
-    return $this->hasOne(Resident::class);
-}
-public function annonces() {
-    return $this->hasMany(Annonce::class);
-}
-public function isSyndic() {
-    return $this->role === 'syndic';
-}
-public function isResident() {
-    return $this->role === 'resident';
-}
+    // ─── Relations ───────────────────────────────────────────
+
+    public function lot()
+    {
+        return $this->belongsTo(Lot::class); // ← ajouté
+    }
+
+    public function reclamations()
+    {
+        return $this->hasMany(Reclamation::class, 'resident_id');
+    }
+
+    public function resident()
+    {
+        return $this->hasOne(Resident::class);
+    }
+
+    public function annonces()
+    {
+        return $this->hasMany(Annonce::class);
+    }
+
+    // ─── Helpers ─────────────────────────────────────────────
+
+    public function isSyndic()
+    {
+        return $this->role === 'syndic';
+    }
+
+    public function isResident()
+    {
+        return $this->role === 'resident';
+    }
+
+    // ─── Hidden & Casts ──────────────────────────────────────
 
     /**
      * The attributes that should be hidden for serialization.

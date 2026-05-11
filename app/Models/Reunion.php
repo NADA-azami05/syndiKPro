@@ -6,15 +6,21 @@ use Illuminate\Database\Eloquent\Model;
 
 class Reunion extends Model
 {
-   protected $fillable = [
-    'user_id', 'copropriete_id',
-    'titre', 'contenu', 'type', 'publiee'
-];
+    protected $fillable = [
+        'copropriete_id',
+        'titre',
+        'date',
+        'lieu',
+        'ordre_jour',
+        'statut',
+    ];
 
-public function user() {
-    return $this->belongsTo(User::class);
-}
-public function copropriete() {
-    return $this->belongsTo(Copropriete::class);
-}
+    protected $casts = [
+        'date' => 'datetime',
+    ];
+
+    public function copropriete()
+    {
+        return $this->belongsTo(Copropriete::class);
+    }
 }

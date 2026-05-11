@@ -80,6 +80,12 @@
     color: #fff
 }
 
+.sb-item.disabled {
+    opacity: .4;
+    cursor: not-allowed;
+    pointer-events: none
+}
+
 .sb-bot {
     padding: 16px 12px 0;
     border-top: 1px solid #e5e7eb;
@@ -139,6 +145,16 @@
 
 .sb-out:hover {
     background: #fef2f2
+}
+
+.badge-soon {
+    font-size: 9px;
+    background: #f0f4ff;
+    color: #006AD7;
+    padding: 1px 6px;
+    border-radius: 20px;
+    margin-left: auto;
+    font-weight: 600
 }
 
 .mc {
@@ -315,6 +331,10 @@
     font-weight: 500
 }
 
+.dcl:hover {
+    text-decoration: underline
+}
+
 .ir {
     display: flex;
     align-items: flex-start;
@@ -466,19 +486,34 @@
 }
 </style>
 @endpush
+
 @section('content')
 <div class="dw">
+
+    {{-- ═══════════════════ SIDEBAR ═══════════════════ --}}
     <aside class="sb">
-        <div class="sb-logo">
-            <div class="ic">🏢</div>SyndicPro
-        </div>
         <nav class="sb-nav">
-            <a href="{{ route('resident.dashboard') }}" class="sb-item active">🏠 Mon espace</a>
-            <a href="#" class="sb-item">📄 Mes factures</a>
-            <a href="#" class="sb-item">📢 Mes réclamations</a>
-            <a href="#" class="sb-item">🗳️ Votes</a>
-            <a href="#" class="sb-item">📣 Annonces</a>
-            <a href="#" class="sb-item">📅 Réunions</a>
+            <a href="{{ route('resident.dashboard') }}"
+                class="sb-item {{ request()->routeIs('resident.dashboard') ? 'active' : '' }}">🏠 Mon espace</a>
+
+            <a href="{{ route('resident.factures.mes') }}"
+                class="sb-item {{ request()->routeIs('resident.factures*') ? 'active' : '' }}">📄 Mes factures</a>
+
+            <a href="{{ route('resident.reclamations.mes') }}"
+                class="sb-item {{ request()->routeIs('resident.reclamations*') ? 'active' : '' }}">📢 Mes
+                réclamations</a>
+
+            <a href="{{ route('resident.annonces.index') }}"
+                class="sb-item {{ request()->routeIs('resident.annonces*') ? 'active' : '' }}">📣 Annonces</a>
+
+            <a href="{{ route('resident.reunions.mes') }}"
+                class="sb-item {{ request()->routeIs('resident.reunions*') ? 'active' : '' }}">📅 Réunions</a>
+
+            <a href="{{ route('resident.votes.index') }}"
+                class="sb-item {{ request()->routeIs('resident.votes*') ? 'active' : '' }}">🗳️ Votes</a>
+
+            <a href="{{ route('resident.notifications.index') }}"
+                class="sb-item {{ request()->routeIs('resident.notifications*') ? 'active' : '' }}">🔔 Notifications</a>
         </nav>
         <div class="sb-bot">
             <div class="sb-user">
@@ -493,11 +528,21 @@
             </form>
         </div>
     </aside>
+
+    {{-- ═══════════════════ MAIN ═══════════════════ --}}
     <main class="mc">
         <div class="mh">
             <h1>Mon Espace</h1>
             <p>Bienvenue, {{ auth()->user()->name }} — {{ now()->translatedFormat('l d F Y') }}</p>
         </div>
+
+        @if(session('success'))
+        <div
+            style="background:#f0fdf4;border:1px solid #bbf7d0;color:#16a34a;padding:12px 16px;border-radius:10px;margin-bottom:20px;font-size:14px;">
+            ✅ {{ session('success') }}
+        </div>
+        @endif
+
         @if(!$resident)
         <div class="dc" style="text-align:center;padding:60px">
             <div style="font-size:48px;margin-bottom:16px">🏠</div>
@@ -506,6 +551,7 @@
             <p style="color:#6b7280;font-size:14px">Contactez votre syndic pour activer votre espace.</p>
         </div>
         @else
+
         {{-- Bannière profil --}}
         <div class="pb">
             <div class="pa">{{ strtoupper(substr(auth()->user()->name, 0, 1)) }}</div>
@@ -520,6 +566,7 @@
                 </div>
             </div>
         </div>
+
         {{-- KPIs --}}
         <p class="sl">Aperçu des statistiques</p>
         <div class="kg">
@@ -545,6 +592,7 @@
                 </div>
             </div>
         </div>
+
         {{-- Profil + Lot --}}
         <p class="sl">Informations personnelles & Lot</p>
         <div class="g2">
@@ -632,10 +680,13 @@
                 @endif
             </div>
         </div>
+
         {{-- Factures --}}
         <p class="sl">Mes factures récentes</p>
         <div class="dc">
-            <div class="dch"><span class="dct">📄 5 dernières factures</span><a href="#" class="dcl">Voir toutes →</a>
+            <div class="dch">
+                <span class="dct">📄 5 dernières factures</span>
+                <a href="{{ route('resident.factures.mes') }}" class="dcl">Voir toutes →</a>
             </div>
             @if($factures->count())
             <table class="dt">
@@ -655,22 +706,29 @@
                         <td>{{ $f->mois }}</td>
                         <td><strong>{{ number_format($f->total, 0) }} MAD</strong></td>
                         <td>{{ \Carbon\Carbon::parse($f->echeance)->format('d/m/Y') }}</td>
-                        <td>@php $bl = ['payee' => 'bp', 'envoyee' => 'be', 'retard' => 'br', 'en_attente_confirmation'
-                            => 'ba', 'brouillon' => 'bb'];
+                        <td>
+                            @php
+                            $bl = ['payee' => 'bp', 'envoyee' => 'be', 'retard' => 'br', 'en_attente_confirmation' =>
+                            'ba', 'brouillon' => 'bb'];
                             $ll = ['payee' => '✓ Payée', 'envoyee' => '📤 Envoyée', 'retard' => '⚠ Retard',
-                            'en_attente_confirmation' => '⏳ Confirm.', 'brouillon' => '📝 Brouillon'];@endphp<span
-                                class="b {{ $bl[$f->statut] ?? 'bb' }}">{{ $ll[$f->statut] ?? $f->statut }}</span></td>
+                            'en_attente_confirmation' => '⏳ Confirm.', 'brouillon' => '📝 Brouillon'];
+                            @endphp
+                            <span class="b {{ $bl[$f->statut] ?? 'bb' }}">{{ $ll[$f->statut] ?? $f->statut }}</span>
+                        </td>
                     </tr>
                     @endforeach
                 </tbody>
             </table>
             @else<div class="es">📄<br>Aucune facture pour l'instant.</div>@endif
         </div>
+
         {{-- Réclamations --}}
         <p class="sl">Mes réclamations récentes</p>
         <div class="dc">
-            <div class="dch"><span class="dct">📢 3 dernières réclamations</span><a href="#" class="dcl">Voir toutes
-                    →</a></div>
+            <div class="dch">
+                <span class="dct">📢 3 dernières réclamations</span>
+                <a href="{{ route('resident.reclamations.mes') }}" class="dcl">Voir toutes →</a>
+            </div>
             @if($reclamations->count())
             <table class="dt">
                 <thead>
@@ -686,12 +744,16 @@
                     <tr>
                         <td>{{ Str::limit($r->titre, 35) }}</td>
                         <td><span
-                                class="b @if($r->priorite == 'urgente') bu @elseif($r->priorite == 'critique') b @else bn @endif">{{ ucfirst($r->priorite) }}</span>
+                                class="b @if($r->priorite == 'urgente') bu @elseif($r->priorite == 'critique') br @else bn @endif">{{ ucfirst($r->priorite) }}</span>
                         </td>
-                        <td>@php $sb = ['en_attente' => 'ba', 'en_cours' => 'bec', 'resolu' => 'bs', 'ferme' => 'bb'];
+                        <td>
+                            @php
+                            $sb = ['en_attente' => 'ba', 'en_cours' => 'bec', 'resolu' => 'bs', 'ferme' => 'bb'];
                             $sl = ['en_attente' => '⏳ En attente', 'en_cours' => '🔄 En cours', 'resolu' => '✓ Résolu',
-                            'ferme' => '🔒 Fermé'];@endphp<span
-                                class="b {{ $sb[$r->statut] ?? 'ba' }}">{{ $sl[$r->statut] ?? $r->statut }}</span></td>
+                            'ferme' => '🔒 Fermé'];
+                            @endphp
+                            <span class="b {{ $sb[$r->statut] ?? 'ba' }}">{{ $sl[$r->statut] ?? $r->statut }}</span>
+                        </td>
                         <td>{{ $r->created_at->format('d/m/Y') }}</td>
                     </tr>
                     @endforeach
@@ -699,6 +761,7 @@
             </table>
             @else<div class="es">📢<br>Aucune réclamation pour l'instant.</div>@endif
         </div>
+
         @endif
     </main>
 </div>

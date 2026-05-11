@@ -26,35 +26,13 @@
     height: calc(100vh - 68px)
 }
 
-.sb-logo {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 0 20px 24px;
-    border-bottom: 1px solid #e5e7eb;
-    margin-bottom: 16px;
-    font-size: 16px;
-    font-weight: 600;
-    color: #006AD7
-}
-
-.sb-logo .ic {
-    width: 34px;
-    height: 34px;
-    background: #006AD7;
-    border-radius: 8px;
-    display: grid;
-    place-items: center;
-    font-size: 15px;
-    color: #fff
-}
-
 .sb-nav {
     flex: 1;
     display: flex;
     flex-direction: column;
     gap: 4px;
-    padding: 0 12px
+    padding: 0 12px;
+    overflow-y: auto
 }
 
 .sb-item {
@@ -78,6 +56,12 @@
 .sb-item.active {
     background: #006AD7;
     color: #fff
+}
+
+.sb-item.disabled {
+    opacity: .4;
+    cursor: not-allowed;
+    pointer-events: none
 }
 
 .sb-bot {
@@ -139,6 +123,16 @@
 
 .sb-out:hover {
     background: #fef2f2
+}
+
+.badge-soon {
+    font-size: 9px;
+    background: #f0f4ff;
+    color: #006AD7;
+    padding: 1px 6px;
+    border-radius: 20px;
+    margin-left: auto;
+    font-weight: 600
 }
 
 .mc {
@@ -449,21 +443,45 @@
 }
 </style>
 @endpush
+
 @section('content')
 <div class="dw">
+
+    {{-- ═══════════════════ SIDEBAR ═══════════════════ --}}
     <aside class="sb">
         <nav class="sb-nav">
-            <a href="{{ route('syndic.dashboard') }}" class="sb-item active">📊 Tableau de bord</a>
-            <a href="#" class="sb-item">🏙️ Copropriétés</a>
-            <a href="#" class="sb-item">👥 Résidents</a>
-            <a href="#" class="sb-item">🏠 Lots</a>
-            <a href="#" class="sb-item">📄 Factures</a>
-            <a href="#" class="sb-item">📢 Réclamations</a>
-            <a href="#" class="sb-item">🔧 Fournisseurs</a>
-            <a href="#" class="sb-item">🗳️ Votes</a>
-            <a href="#" class="sb-item">📣 Annonces</a>
-            <a href="#" class="sb-item">📅 Réunions</a>
+            <a href="{{ route('syndic.dashboard') }}"
+                class="sb-item {{ request()->routeIs('syndic.dashboard') ? 'active' : '' }}">📊 Tableau de bord</a>
+
+            <a href="{{ route('syndic.coproprietes.index') }}"
+                class="sb-item {{ request()->routeIs('syndic.coproprietes*') ? 'active' : '' }}">🏙️ Copropriétés</a>
+
+            <a href="{{ route('syndic.residents.index') }}"
+                class="sb-item {{ request()->routeIs('syndic.residents*') ? 'active' : '' }}">👥 Résidents</a>
+
+            <a href="{{ route('syndic.lots.index') }}"
+                class="sb-item {{ request()->routeIs('syndic.lots*') ? 'active' : '' }}">🏠 Lots</a>
+
+            <a href="{{ route('syndic.factures.index') }}"
+                class="sb-item {{ request()->routeIs('syndic.factures*') ? 'active' : '' }}">📄 Factures</a>
+
+            <a href="{{ route('syndic.reclamations.index') }}"
+                class="sb-item {{ request()->routeIs('syndic.reclamations*') ? 'active' : '' }}">📢 Réclamations</a>
+
+            <a href="{{ route('syndic.reunions.index') }}"
+                class="sb-item {{ request()->routeIs('syndic.reunions*') ? 'active' : '' }}">📅 Réunions</a>
+
+            <a href="{{ route('syndic.annonces.index') }}"
+                class="sb-item {{ request()->routeIs('syndic.annonces*') ? 'active' : '' }}">📣 Annonces</a>
+
+            <a href="{{ route('syndic.fournisseurs.index') }}"
+                class="sb-item {{ request()->routeIs('syndic.fournisseurs*') || request()->routeIs('syndic.interventions*') ? 'active' : '' }}">🔧
+                Fournisseurs</a>
+
+            <a href="{{ route('syndic.votes.index') }}"
+                class="sb-item {{ request()->routeIs('syndic.votes*') ? 'active' : '' }}">🗳️ Votes</a>
         </nav>
+
         <div class="sb-bot">
             <div class="sb-user">
                 <div class="sb-av">{{ strtoupper(substr(auth()->user()->name, 0, 1)) }}</div>
@@ -477,11 +495,28 @@
             </form>
         </div>
     </aside>
+
+    {{-- ═══════════════════ MAIN ═══════════════════ --}}
     <main class="mc">
+
         <div class="mh">
             <h1>Tableau de bord</h1>
             <p>Vue synthétique de la gestion en cours — {{ now()->translatedFormat('l d F Y') }}</p>
         </div>
+
+        @if(session('success'))
+        <div
+            style="background:#f0fdf4;border:1px solid #bbf7d0;color:#16a34a;padding:12px 16px;border-radius:10px;margin-bottom:20px;font-size:14px;">
+            ✅ {{ session('success') }}
+        </div>
+        @endif
+        @if(session('error'))
+        <div
+            style="background:#fef2f2;border:1px solid #fecaca;color:#dc2626;padding:12px 16px;border-radius:10px;margin-bottom:20px;font-size:14px;">
+            ❌ {{ session('error') }}
+        </div>
+        @endif
+
         <p class="sl">Aperçu des statistiques</p>
         <div class="kg">
             <div class="kc">
@@ -520,10 +555,13 @@
                 </div>
             </div>
         </div>
+
         <p class="sl">Activité récente</p>
         <div class="cg">
             <div class="dc">
-                <div class="dch"><span class="dct">📄 Dernières factures</span><a href="#" class="dcl">Voir tout →</a>
+                <div class="dch">
+                    <span class="dct">📄 Dernières factures</span>
+                    <a href="{{ route('syndic.factures.index') }}" class="dcl">Voir tout →</a>
                 </div>
                 <table class="dt">
                     <thead>
@@ -541,32 +579,29 @@
                             <td>{{ $f->resident->user->name ?? '—' }}</td>
                             <td>{{ number_format($f->total, 0) }} MAD</td>
                             <td>
-                                @php $bl = [
-                                'payee' => 'bp',
-                                'envoyee' => 'be',
-                                'retard' => 'br',
-                                'brouillon' => 'bb',
-                                'en_attente_confirmation' => 'ba'
-                                ];
-                                $ll = [
-                                'payee' => '✓ Payée',
-                                'envoyee' => '📤 Envoyée',
-                                'retard' => '⚠ Retard',
-                                'brouillon' => '📝 Brouillon',
-                                'en_attente_confirmation' => '⏳ Confirm.'
-                                ]; @endphp
+                                @php
+                                $bl = ['payee' => 'bp', 'envoyee' => 'be', 'retard' => 'br', 'brouillon' => 'bb',
+                                'en_attente_confirmation' => 'ba'];
+                                $ll = ['payee' => '✓ Payée', 'envoyee' => '📤 Envoyée', 'retard' => '⚠ Retard',
+                                'brouillon' => '📝 Brouillon', 'en_attente_confirmation' => '⏳ Confirm.'];
+                                @endphp
                                 <span class="b {{ $bl[$f->statut] ?? 'bb' }}">{{ $ll[$f->statut] ?? $f->statut }}</span>
                             </td>
                         </tr>
-                        @empty<tr>
+                        @empty
+                        <tr>
                             <td colspan="4" style="text-align:center;color:#6b7280;padding:16px">Aucune facture</td>
                         </tr>
                         @endforelse
                     </tbody>
                 </table>
             </div>
+
             <div class="dc">
-                <div class="dch"><span class="dct">📢 Réclamations</span><a href="#" class="dcl">Voir tout →</a></div>
+                <div class="dch">
+                    <span class="dct">📢 Réclamations</span>
+                    <a href="{{ route('syndic.reclamations.index') }}" class="dcl">Voir tout →</a>
+                </div>
                 <table class="dt">
                     <thead>
                         <tr>
@@ -584,7 +619,8 @@
                             </td>
                             <td><span class="b ba">⏳ En attente</span></td>
                         </tr>
-                        @empty<tr>
+                        @empty
+                        <tr>
                             <td colspan="3" style="text-align:center;color:#6b7280;padding:16px">Aucune réclamation</td>
                         </tr>
                         @endforelse
@@ -592,6 +628,7 @@
                 </table>
             </div>
         </div>
+
         <p class="sl">Finances & Prestataires</p>
         <div class="cg3">
             <div class="dc">
@@ -619,18 +656,18 @@
                     </div>
                 </div>
             </div>
+
             <div class="dc">
-                <div class="dch"><span class="dct">🔧 Fournisseurs</span><a href="#" class="dcl">Voir tout →</a></div>
+                <div class="dch">
+                    <span class="dct">🔧 Fournisseurs</span>
+                    <a href="{{ route('syndic.fournisseurs.index') }}" class="dcl">Voir tout →</a>
+                </div>
                 @forelse(\App\Models\Fournisseur::where('actif', true)->orderByDesc('note')->take(5)->get() as $f)
                 <div class="fi">
                     <div class="fav">
-                        @php $ic = [
-                        'plomberie' => '🔧',
-                        'electricite' => '⚡',
-                        'nettoyage' => '🧹',
-                        'securite' => '🔒',
-                        'autre' => '🏢'
-                        ]; @endphp{{ $ic[$f->categorie] ?? '🏢' }}
+                        @php $ic = ['plomberie' => '🔧', 'electricite' => '⚡', 'nettoyage' => '🧹', 'securite' => '🔒',
+                        'autre' => '🏢']; @endphp
+                        {{ $ic[$f->categorie] ?? '🏢' }}
                     </div>
                     <div style="flex:1">
                         <div class="fn">{{ Str::limit($f->nom, 18) }}</div>
@@ -638,10 +675,12 @@
                     </div>
                     <div class="st">@for($i = 1; $i <= 5; $i++){{ $i <= $f->note ? '★' : '☆' }}@endfor</div>
                     </div>
-                    @empty<p style="text-align:center;color:#6b7280;padding:20px;font-size:13px">Aucun fournisseur</p>
+                    @empty
+                    <p style="text-align:center;color:#6b7280;padding:20px;font-size:13px">Aucun fournisseur</p>
                     @endforelse
                 </div>
             </div>
+
     </main>
 </div>
 @endsection
