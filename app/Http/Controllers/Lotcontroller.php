@@ -10,7 +10,7 @@ use Illuminate\View\View;
 
 class LotController extends Controller
 {
-    
+
 
     // ── Liste des lots ────────────────────────────────────────────────────────
     public function index(): View
@@ -20,9 +20,9 @@ class LotController extends Controller
             ->paginate(15);
 
         $stats = [
-            'total'   => Lot::count(),
+            'total' => Lot::count(),
             'occupes' => Lot::where('statut', 'occupe')->count(),
-            'libres'  => Lot::where('statut', 'libre')->count(),
+            'libres' => Lot::where('statut', 'libre')->count(),
         ];
 
         return view('lots.index', compact('lots', 'stats'));
@@ -40,15 +40,20 @@ class LotController extends Controller
     {
         $request->validate([
             'copropriete_id' => ['required', 'exists:coproprietes,id'],
-            'numero'         => ['required', 'string', 'max:50'],
-            'type'           => ['required', 'in:appartement,commerce,parking,local'],
-            'surface'        => ['required', 'numeric', 'min:1'],
-            'quote_part'     => ['required', 'numeric', 'min:0', 'max:1'],
-            'statut'         => ['required', 'in:occupe,libre'],
+            'numero' => ['required', 'string', 'max:50'],
+            'type' => ['required', 'in:appartement,commerce,parking,local'],
+            'surface' => ['required', 'numeric', 'min:1'],
+            'quote_part' => ['required', 'numeric', 'min:0', 'max:1'],
+            'statut' => ['required', 'in:occupe,libre'],
         ]);
 
         Lot::create($request->only([
-            'copropriete_id', 'numero', 'type', 'surface', 'quote_part', 'statut'
+            'copropriete_id',
+            'numero',
+            'type',
+            'surface',
+            'quote_part',
+            'statut'
         ]));
 
         return redirect()->route('syndic.lots.index')
@@ -67,15 +72,20 @@ class LotController extends Controller
     {
         $request->validate([
             'copropriete_id' => ['required', 'exists:coproprietes,id'],
-            'numero'         => ['required', 'string', 'max:50'],
-            'type'           => ['required', 'in:appartement,commerce,parking,local'],
-            'surface'        => ['required', 'numeric', 'min:1'],
-            'quote_part'     => ['required', 'numeric', 'min:0', 'max:1'],
-            'statut'         => ['required', 'in:occupe,libre'],
+            'numero' => ['required', 'string', 'max:50'],
+            'type' => ['required', 'in:appartement,commerce,parking,local'],
+            'surface' => ['required', 'numeric', 'min:1'],
+            'quote_part' => ['required', 'numeric', 'min:0', 'max:1'],
+            'statut' => ['required', 'in:occupe,libre'],
         ]);
 
         $lot->update($request->only([
-            'copropriete_id', 'numero', 'type', 'surface', 'quote_part', 'statut'
+            'copropriete_id',
+            'numero',
+            'type',
+            'surface',
+            'quote_part',
+            'statut'
         ]));
 
         return redirect()->route('syndic.lots.index')

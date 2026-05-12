@@ -29,33 +29,21 @@ class CoproprieteController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $request->validate([
-<<<<<<< HEAD
             'nom' => ['required', 'string', 'max:255'],
             'adresse' => ['required', 'string', 'max:255'],
             'ville' => ['required', 'string', 'max:100'],
             'nb_lots' => ['required', 'integer', 'min:1'],
             'budget' => ['nullable', 'numeric', 'min:0'],
-=======
-            'nom'        => ['required', 'string', 'max:255'],
-            'adresse'    => ['required', 'string', 'max:255'],
-            'ville'      => ['required', 'string', 'max:100'],
-            'nb_lots'    => ['required', 'integer', 'min:1'],
-            'budget'     => ['nullable', 'numeric', 'min:0'],
->>>>>>> 23e859eb1341ed83e8908e12cbdbb8afac276d95
             'syndic_nom' => ['nullable', 'string', 'max:255'],
         ]);
 
         Copropriete::create($request->only([
-<<<<<<< HEAD
             'nom',
             'adresse',
             'ville',
             'nb_lots',
             'budget',
             'syndic_nom'
-=======
-            'nom', 'adresse', 'ville', 'nb_lots', 'budget', 'syndic_nom'
->>>>>>> 23e859eb1341ed83e8908e12cbdbb8afac276d95
         ]));
 
         return redirect()->route('syndic.coproprietes.index')
@@ -80,33 +68,21 @@ class CoproprieteController extends Controller
     public function update(Request $request, Copropriete $copropriete): RedirectResponse
     {
         $request->validate([
-<<<<<<< HEAD
             'nom' => ['required', 'string', 'max:255'],
             'adresse' => ['required', 'string', 'max:255'],
             'ville' => ['required', 'string', 'max:100'],
             'nb_lots' => ['required', 'integer', 'min:1'],
             'budget' => ['nullable', 'numeric', 'min:0'],
-=======
-            'nom'        => ['required', 'string', 'max:255'],
-            'adresse'    => ['required', 'string', 'max:255'],
-            'ville'      => ['required', 'string', 'max:100'],
-            'nb_lots'    => ['required', 'integer', 'min:1'],
-            'budget'     => ['nullable', 'numeric', 'min:0'],
->>>>>>> 23e859eb1341ed83e8908e12cbdbb8afac276d95
             'syndic_nom' => ['nullable', 'string', 'max:255'],
         ]);
 
         $copropriete->update($request->only([
-<<<<<<< HEAD
             'nom',
             'adresse',
             'ville',
             'nb_lots',
             'budget',
             'syndic_nom'
-=======
-            'nom', 'adresse', 'ville', 'nb_lots', 'budget', 'syndic_nom'
->>>>>>> 23e859eb1341ed83e8908e12cbdbb8afac276d95
         ]));
 
         return redirect()->route('syndic.coproprietes.index')

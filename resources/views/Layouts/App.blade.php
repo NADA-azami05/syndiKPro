@@ -342,6 +342,12 @@
             <p class="footer-copy">© {{ date('Y') }} SyndicPro — Tous droits réservés</p>
         </div>
     </footer>
+     {{-- Chatbot : visible uniquement pour le résident --}}
+    @auth
+        @if(!auth()->user()->isSyndic())
+            @include('components.chatbot')
+        @endif
+    @endauth
 
     @stack('scripts')
 </body>

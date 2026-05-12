@@ -16,6 +16,7 @@ return Application::configure(basePath: dirname(__DIR__))
         // Enregistrer le middleware CheckRole avec l'alias 'role'
         $middleware->alias([
             'role' => \App\Http\Middleware\CheckRole::class,
+            'resident.profile' => \App\Http\Middleware\CheckResidentProfile::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
